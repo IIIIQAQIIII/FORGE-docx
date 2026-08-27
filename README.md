@@ -118,6 +118,35 @@ validate_docx
 可编辑、格式稳定的 DOCX
 ```
 
+## Before vs After / 生成前后对比
+
+FORGE 的价值不只是“生成一篇文档”，而是把 AI 生成的内容**稳定地锻造成格式可控、可继续编辑的 Word 文档**。
+
+通用大模型通常很擅长内容生成，但在 Word 文档中，标题层级、段距、落款、页码、表格、图片和模板结构容易出现格式漂移。FORGE 通过模板和固定规则把这些格式责任从大模型手中拿回来。
+
+<p align="center">
+  <img src="./assets/forge-before-after-docx.svg" alt="FORGE Before vs After / 生成前后对比" width="100%">
+</p>
+
+### Without FORGE / 不使用 FORGE
+
+- 标题层级容易漂移
+- 段距与行距不一致
+- 落款位置可能偏移
+- 表格与图片不易稳定对齐
+- 输出结果往往还需要大量人工整理
+
+### With FORGE / 使用 FORGE
+
+- 标题层级由模板和规则控制
+- 正文段距、行距和版式保持一致
+- 落款、表格、图片进入预设位置
+- 生成结果可直接继续编辑
+- 同一模板可以稳定复用到下一份文档
+
+**AI writes. Templates define. FORGE enforces.**  
+**AI 负责写，模板负责定版，FORGE 负责守住格式。**
+
 ## MCP tools / MCP 工具
 
 | Tool | Purpose / 用途 |
