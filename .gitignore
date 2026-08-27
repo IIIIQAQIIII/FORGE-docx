@@ -1,0 +1,13 @@
+# Runtime and generated files
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.env
+outputs/*
+!outputs/.gitkeep
+*.tmp.docx
+*.photo.tmp.docx
+deepseek-harness-forge-docx.yml
+dist/

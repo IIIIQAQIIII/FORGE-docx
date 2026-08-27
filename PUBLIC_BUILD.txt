@@ -1,0 +1,31 @@
+FORGE public snapshot v1.1
+Target repository: IIIIQAQIIII/forge-docx
+Git history: intentionally not included
+
+Files:
+.gitignore
+INSTALL.md
+PUBLIC_BUILD.txt
+README.md
+VERSION
+build_release.py
+install_codex_mcp.ps1
+install_codex_mcp.sh
+install_mcp.ps1
+install_mcp.sh
+outputs/.gitkeep
+requirements.txt
+server.py
+templates/sample_template.docx
+templates/传统公文-活动方案.docx
+templates/传统公文.docx
+templates/培训活动影像.docx
+templates/培训活动记录.docx
+templates/培训通知.docx
+templates/培训通知记录.docx
+templates/活动影像.docx
+templates/活动总结.docx
+templates/行政周报.docx
+templates/论文.docx
+
+This manifest is generated from a sanitized snapshot.
