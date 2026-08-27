@@ -2,6 +2,12 @@
 
 **Format-Oriented Rendering & Generation Engine**
 
+[![Version](https://img.shields.io/badge/version-v1.1-111111?style=flat-square)](VERSION)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](requirements.txt)
+[![MCP](https://img.shields.io/badge/MCP-stdio-6F42C1?style=flat-square)](README.md)
+[![DOCX](https://img.shields.io/badge/DOCX-template--driven-2B579A?style=flat-square)](templates)
+[![License: MIT](https://img.shields.io/badge/License-MIT-2ea44f?style=flat-square)](LICENSE)
+
 > **Forge documents that don’t break.**
 >
 > **AI writes. FORGE holds the format.**
