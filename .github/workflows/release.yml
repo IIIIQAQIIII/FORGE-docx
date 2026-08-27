@@ -1,0 +1,103 @@
+name: Publish FORGE Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish, e.g. v1.1'
+        required: true
+        default: 'v1.1'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag
+        id: tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout tagged source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Verify version matches tag
+        shell: bash
+        run: |
+          TAG='${{ steps.tag.outputs.tag }}'
+          VERSION="$(tr -d '\r\n' < VERSION)"
+          EXPECTED="v${VERSION#v}"
+          if [ "$TAG" != "$EXPECTED" ]; then
+            echo "Tag $TAG does not match VERSION $VERSION (expected $EXPECTED)."
+            exit 1
+          fi
+
+      - name: Build release ZIP and SHA256
+        run: python build_release.py
+
+      - name: Prepare release notes
+        shell: bash
+        run: |
+          TAG='${{ steps.tag.outputs.tag }}'
+          cat > release-notes.md <<EOF
+          # FORGE ${TAG}
+
+          **Format-Oriented Rendering & Generation Engine**
+
+          > Forge documents that don’t break.  
+          > AI writes. FORGE holds the format.
+
+          First public FORGE release with template-driven DOCX generation for AI agents.
+
+          ## Highlights
+          - Local stdio MCP server for Codex, DeepSeek Harness / DSH, and other MCP clients
+          - Template-driven DOCX generation with validation and light repair
+          - 11 sanitized public Word templates
+          - Official-document, long-form, weekly-report, activity, and training workflows
+          - macOS / Linux and Windows installers
+          - MIT licensed
+
+          ## Requirements
+          - Python 3.10+
+
+          ## Install
+          Clone the repository and run `install_mcp.sh` on macOS/Linux or `install_mcp.ps1` on Windows.
+
+          ## Downloads
+          This Release includes the FORGE ZIP package and its SHA256 checksum.
+          EOF
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        shell: bash
+        run: |
+          ZIP="$(ls dist/forge-docx-${TAG}.zip)"
+          SHA="${ZIP}.sha256"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" "$SHA" --clobber
+            gh release edit "$TAG" --title "FORGE $TAG" --notes-file release-notes.md
+          else
+            gh release create "$TAG" "$ZIP" "$SHA" \
+              --title "FORGE $TAG" \
+              --notes-file release-notes.md
+          fi
