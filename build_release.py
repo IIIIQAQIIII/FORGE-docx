@@ -1,4 +1,4 @@
-"""Build a clean end-user ZIP from the private development repository.
+"""Build a clean end-user ZIP from the public FORGE repository.
 
 Usage:
     python3 build_release.py
@@ -7,9 +7,9 @@ Output:
     dist/forge-docx-vX.Y.Z.zip
     dist/forge-docx-vX.Y.Z.zip.sha256
 
-The archive is whitelist-based: only runtime files and templates are included.
-Development scripts, tests, Git metadata, virtual environments, local config and
-previous outputs are deliberately excluded.
+The archive is whitelist-based: only runtime files, license, docs and templates
+are included. Development scripts, tests, Git metadata, virtual environments,
+local config and previous outputs are deliberately excluded.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ RUNTIME_FILES = [
     "VERSION",
     "README.md",
     "INSTALL.md",
+    "LICENSE",
     "install_mcp.sh",
     "install_mcp.ps1",
     # Backward-compatible client-specific installers.
