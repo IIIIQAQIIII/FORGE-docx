@@ -88,4 +88,4 @@ jobs:
       - name: Update existing v1.1 release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release edit v1.1 --title "FORGE v1.1" --notes-file release-notes.md
+        run: gh release edit v1.1 --repo IIIIQAQIIII/FORGE-docx --title "FORGE v1.1" --notes-file release-notes.md
