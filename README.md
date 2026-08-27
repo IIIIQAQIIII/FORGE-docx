@@ -7,6 +7,8 @@
 [![MCP](https://img.shields.io/badge/MCP-stdio-6F42C1?style=flat-square)](README.md)
 [![DOCX](https://img.shields.io/badge/DOCX-template--driven-2B579A?style=flat-square)](templates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2ea44f?style=flat-square)](LICENSE)
+[![FORGE CI](https://github.com/IIIIQAQIIII/FORGE-docx/actions/workflows/ci.yml/badge.svg)](https://github.com/IIIIQAQIIII/FORGE-docx/actions/workflows/ci.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/IIIIQAQIIII/FORGE-docx?style=flat-square&label=release)](https://github.com/IIIIQAQIIII/FORGE-docx/releases/latest)
 
 > **Forge documents that don’t break.**
 >
