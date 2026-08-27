@@ -123,4 +123,4 @@ Private and public releases may share the same version number while using differ
 
 ## License
 
-No license is added automatically by the public builder. Add an appropriate `LICENSE` before treating the repository as open source.
+FORGE is released under the **MIT License**. See `LICENSE` for the full license text.
