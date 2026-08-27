@@ -21,19 +21,122 @@ Version / 当前版本：**v1.1**
 
 FORGE is a local stdio MCP engine for generating editable Word DOCX files from structured content and reusable templates.
 
-FORGE 是一个本地运行的 stdio MCP 文档引擎，用于将 AI 生成的结构化内容稳定地写入可复用 Word 模板，生成可继续编辑的 DOCX 文档。
+FORGE 是一个本地运行的 stdio MCP 文档引擎。它不让 AI 自由“画”Word 格式，而是让 AI 负责理解需求和生成内容，让模板负责定义版式，再由 FORGE 完成**文档类型选择、字段约束、模板渲染、OOXML 后处理、校验与轻量修复**，最终生成可继续编辑的 `.docx` 文件。
 
-核心思路：**AI 负责理解需求和生成内容，模板负责定义版式，FORGE 负责渲染、约束、校验与轻量修复。**
+一句话概括：**AI 负责写，模板负责定版，FORGE 负责把内容稳定地放进正确格式。**
+
+## Formatting references / 格式依据
+
+FORGE 的格式体系来自两类来源：
+
+1. **规范性公文版式参考**：传统公文模板参考现行推荐性国家标准 [GB/T 9704-2012《党政机关公文格式》](https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=F3CC9BEF482524C895FDA7A08BB4A70E) 的核心排版原则，并结合 Word 模板自动化生成的实际需要进行工程化实现。
+2. **业务文档模板经验**：论文、周报、活动资料、培训资料等模板来自常见行政、教育与办公场景中的可复用 Word 行文规则，并进一步固化为可由 AI 填充的结构化模板。
+
+> **说明：** GB/T 9704-2012 的参考主要针对“传统公文”这一文档族。论文、周报、活动资料、培训资料属于 FORGE 的业务模板规范，不应理解为全部属于国家标准公文格式。FORGE 也不替代最终的人工审校或具体单位内部行文制度。
+
+### Current formatting rules / 当前内置格式要求
+
+| 文档族 | 当前主要版式规则 |
+|---|---|
+| **传统公文** | 标题采用 2 号方正小标宋、居中、固定 32 磅；正文采用 3 号仿宋、固定 28 磅；支持“一、→（一）→1.”三级层次，分别使用黑体 / 楷体 / 仿宋；页码为 4 号宋体阿拉伯数字并带一字线；普通公文不使用红色红头和双红线。 |
+| **活动方案** | 沿用传统公文正文体系，增加“单位 + 部门 + 日期”三行落款，三行共享中线并整体靠右。 |
+| **论文 / 长文** | 无页眉；标题和各级标题默认不加粗；正文小四宋体、固定 18 磅；支持摘要、关键词、三线表和图片；演讲稿 / 发言稿可省略摘要和关键词。 |
+| **行政周报** | 两行标题；按部门分节；每段自动编号；没有内容时可输出“无”。 |
+| **培训通知** | 使用通知类专用格式，包含红色红头与双红线。 |
+| **培训活动记录** | 使用结构化活动记录表格。 |
+| **活动 / 培训影像** | 使用标题 + 信息表 + 图片页结构，可将两张照片排在同一页。 |
+
+FORGE 的关键设计原则是：**模板才是格式的唯一事实来源（source of truth）**。字体、字号、行距、页边距、标题层级、落款位置、表格、图片区域、页码等尽量由模板和固定规则控制，而不是交给大模型临时决定。
+
+## Supported documents / 支持的文档类型
+
+当前公开版内置 **11 个已脱敏 Word 模板**，并通过多个友好文档类型进行调用。
+
+| 文档类型 / 用户可以这样说 | 实际模板 / 用途 |
+|---|---|
+| `传统公文`、`计划`、`总结`、`方案`、`汇报`、`报告`、`请示` | 通用传统公文模板 |
+| `活动方案` | 带部门三行落款的活动方案模板 |
+| `论文`、`演讲稿`、`发言稿`、`长文` | 论文 / 长文模板 |
+| `行政周报`、`周报` | 行政周报模板 |
+| `活动总结` | 活动总结模板 |
+| `活动影像` | 活动影像资料模板 |
+| `培训通知` | 红头 + 双红线培训通知 |
+| `培训活动记录` | 培训活动记录表 |
+| `培训活动影像` | 培训影像资料 |
+| `培训通知记录`、`通知培训资料` | 通知 + 活动记录 + 活动影像三合一版本 |
+| `sample` | MCP 与模板渲染测试用最小模板 |
+
+### Document sets / 成套资料
+
+FORGE 还可以一次生成一组相互配套的文档：
+
+- **活动方案套装**：活动方案 → 活动总结 → 活动影像
+- **培训资料套装**：培训通知 → 培训活动记录 → 培训活动影像
+
+### File scope / 文件范围
+
+当前 FORGE 的核心目标文件是 **Microsoft Word `.docx`**：
+
+- 模板：`.docx`
+- AI / MCP 输入：结构化字段（JSON / MCP 参数）
+- 输出：可继续编辑的 `.docx`
+- 可在 DOCX 中插入图片、三线表等内容
+
+当前版本**不直接生成 PDF、XLSX 或 PPTX**。FORGE 的定位不是通用 Office 转换器，而是专注于**高稳定性的模板化 Word 文档生成**。
+
+## What can this MCP do? / 这个 MCP 能干什么
+
+把 FORGE 接入 Codex、DeepSeek Harness / DSH 或其他 stdio MCP 客户端后，AI 不只是“帮你写一段文字”，而是可以完成一条完整的 Word 文档工作流：
+
+1. **识别应该用什么文档格式**：根据“写计划 / 写总结 / 写论文 / 写周报 / 做培训资料”等意图选择合适模板。
+2. **读取模板需要哪些字段**：自动获取标题、正文、章节、落款、日期、图片等字段要求和示例数据。
+3. **让 AI 先生成结构化内容**：把自然语言需求整理为模板可接受的结构化数据，而不是把整篇文字直接硬塞进 Word。
+4. **生成 DOCX**：按模板渲染内容，并通过 `python-docx / OOXML` 做必要的后处理。
+5. **批量生成成套资料**：一次生成活动方案 + 总结 + 影像，或培训通知 + 记录 + 影像。
+6. **插入图片和三线表**：在支持的模板中将图片、表格内容放到预设版式位置。
+7. **校验生成结果**：检查 DOCX 的基础内容、布局以及是否遗留未替换的模板占位符。
+8. **安全地做轻量修复**：处理 NBSP、意外尾随空格等可保守修复的问题，不进行激进的“重排整个文档”。
+9. **处理学期辅助规则**：提供学年度 / 学期时间辅助信息，帮助涉及学期材料的 AI 生成更合理的日期和周期。
+
+它适合这样的交互：
+
+```text
+用户：帮我写一份本学期教研工作总结，按正式公文格式出 Word。
+
+AI
+  ↓ 判断文种
+传统公文 / 总结
+  ↓ 读取模板字段
+get_template_schema
+  ↓ 生成结构化内容
+标题、开头、一级/二级/三级内容、落款、日期
+  ↓
+FORGE generate_by_type
+  ↓
+validate_docx
+  ↓
+可编辑、格式稳定的 DOCX
+```
+
+## MCP tools / MCP 工具
+
+| Tool | Purpose / 用途 |
+|---|---|
+| `list_document_types` | 查看当前可用文档类型、模板、格式指南和文档套装 |
+| `get_template_schema` | 查看指定模板所需字段、说明和示例数据 |
+| `get_semester_info` | 获取学年度 / 学期辅助信息 |
+| `recommend_document_type` | 根据用户需求推荐合适文档类型 |
+| `generate_docx` | 按指定模板直接生成 DOCX |
+| `generate_by_type` | 按友好文档类型生成 DOCX |
+| `generate_document_set` | 一次生成成套文档 |
+| `validate_docx` | 检查内容、基础版式和残留占位符 |
+| `fix_docx` | 执行保守的 DOCX 轻量修复 |
 
 ## Why FORGE / 为什么选择 FORGE
 
-AI is excellent at writing content, but complex Word documents often drift in headings, paragraph spacing, page margins, page numbers, tables, images, and template structure.
+AI 很擅长写内容，但复杂 Word 文档最容易在**标题、字体、字号、段距、页边距、页码、表格、图片、落款和层级结构**上发生格式漂移。
 
-AI 很擅长写内容，但复杂 Word 文档最容易在标题、段距、页边距、页码、表格、图片、落款和模板结构上发生“格式漂移”。
-
-FORGE does not try to reinvent Word. It treats the template as the source of truth for formatting and lets AI focus on content.
-
-FORGE 不重新发明 Word，而是把**模板作为格式的唯一事实来源**：AI 专注内容，FORGE 负责把内容稳定锻造成符合模板要求的文档。
+FORGE 不重新发明 Word，也不鼓励 AI 临时猜格式，而是把模板作为格式的唯一事实来源：
 
 ```text
 AI content / AI 内容
@@ -67,21 +170,6 @@ flowchart TD
     G --> H[Editable DOCX]
 ```
 
-## Features / 功能特性
-
-- 传统公文、计划、总结、方案、汇报、报告、请示
-- 活动方案、活动总结、活动影像
-- 论文、演讲稿、发言稿等长文
-- 行政周报
-- 培训通知、培训活动记录、培训活动影像
-- 批量生成成套文档
-- 图片与三线表插入
-- DOCX 基础校验与轻量修复
-- Template-driven generation / 模板驱动生成
-- Local stdio MCP / 本地 stdio MCP，不依赖云端文档服务
-
-> 本公开版本中的单位名称、人员名称和示例内容均为虚构或脱敏信息，不代表任何真实机构或个人。
-
 ## Install / 安装
 
 Clone the repository / 克隆仓库：
@@ -110,20 +198,6 @@ The installer creates an isolated virtual environment, installs dependencies, ve
 See `INSTALL.md` for detailed installation instructions.  
 详细安装方式见 `INSTALL.md`。
 
-## MCP tools / MCP 工具
-
-| Tool | Purpose / 用途 |
-|---|---|
-| `list_document_types` | List document types, templates and rules / 查看文档类型、模板与规则 |
-| `get_template_schema` | Show expected fields and example payload / 查看模板字段与示例数据 |
-| `get_semester_info` | Return semester helper information / 获取学期辅助信息 |
-| `recommend_document_type` | Provide a deterministic fallback recommendation / 推荐合适文档类型 |
-| `generate_docx` | Render a named template / 按指定模板生成 DOCX |
-| `generate_by_type` | Generate by friendly document type / 按文档类型生成 |
-| `generate_document_set` | Generate a document bundle / 批量生成成套资料 |
-| `validate_docx` | Run basic DOCX checks / 校验 DOCX |
-| `fix_docx` | Apply conservative light repairs / 进行安全的轻量修复 |
-
 ## Typical flow / 典型流程
 
 ```text
@@ -148,6 +222,8 @@ This repository is a sanitized public snapshot generated from a separate private
 Before a public snapshot is produced, the build checks text files and DOCX package XML for blocked terms and high-risk personal-data patterns. It also clears document author metadata, strips Word preview thumbnails, replaces private embedded template images with blank placeholders, and rejects comments, tracked changes, embedded objects, or external relationships.
 
 公开构建会扫描文本和 DOCX 内部 XML 中的敏感词与高风险个人信息模式，并清除作者元数据、Word 预览缩略图和私有模板图片；同时拒绝批注、修订记录、嵌入对象和外部关系等可能造成信息泄露的结构。
+
+> 本公开版本中的单位名称、人员名称和示例内容均为虚构或脱敏信息，不代表任何真实机构或个人。
 
 Private and public releases may share the same version number while using different commit SHAs.
 
