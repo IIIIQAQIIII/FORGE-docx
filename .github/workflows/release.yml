@@ -56,9 +56,8 @@ jobs:
       - name: Prepare release notes
         shell: bash
         run: |
-          TAG='${{ steps.tag.outputs.tag }}'
-          cat > release-notes.md <<EOF
-          # FORGE ${TAG}
+          cat > release-notes.md <<'EOF'
+          # FORGE ${{ steps.tag.outputs.tag }}
 
           **Format-Oriented Rendering & Generation Engine**
 
