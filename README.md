@@ -1,19 +1,22 @@
-# FORGE
+# FORGE — Word / DOCX MCP Server
+
+> ## ⚒️ **Forge the words. Lock the format. Ship the DOCX.**
+> ## ⚒️ **锻造文字，锁定格式，交付成稿。**
 
 **Format-Oriented Rendering & Generation Engine**  
-**面向 AI Agent 的模板驱动 Word DOCX 生成与格式约束引擎**
+**面向 AI Agent 的模板驱动 Word / DOCX 文档生成与格式约束引擎**
+
+**Template-driven Word / DOCX MCP Server for AI agents · Word MCP · DOCX MCP · document generation**  
+**面向 AI Agent 的 Word / DOCX MCP Server，用于模板驱动的 Word 文档生成、格式约束、校验与轻量修复**
 
 [![Version](https://img.shields.io/badge/version-v1.1-111111?style=flat-square)](VERSION)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](requirements.txt)
 [![MCP](https://img.shields.io/badge/MCP-stdio-6F42C1?style=flat-square)](README.md)
 [![DOCX](https://img.shields.io/badge/DOCX-template--driven-2B579A?style=flat-square)](templates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2ea44f?style=flat-square)](LICENSE)
-[![FORGE CI](https://github.com/IIIIQAQIIII/FORGE-docx/actions/workflows/ci.yml/badge.svg)](https://github.com/IIIIQAQIIII/FORGE-docx/actions/workflows/ci.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/IIIIQAQIIII/FORGE-docx?style=flat-square&label=release)](https://github.com/IIIIQAQIIII/FORGE-docx/releases/latest)
+[![FORGE CI](https://github.com/IIIIQAQIIII/forge-word-docx-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/IIIIQAQIIII/forge-word-docx-mcp/actions/workflows/ci.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/IIIIQAQIIII/forge-word-docx-mcp?style=flat-square&label=release)](https://github.com/IIIIQAQIIII/forge-word-docx-mcp/releases/latest)
 
-> **Forge documents that don’t break.**  
-> **锻造不会崩坏的文档。**
->
 > **AI writes. FORGE holds the format.**  
 > **AI 负责写内容，FORGE 负责守住格式。**
 
@@ -21,7 +24,7 @@ Version / 当前版本：**v1.1**
 
 FORGE is a local stdio MCP engine for generating editable Word DOCX files from structured content and reusable templates.
 
-FORGE 是一个本地运行的 stdio MCP 文档引擎。它不让 AI 自由“画”Word 格式，而是让 AI 负责理解需求和生成内容，让模板负责定义版式，再由 FORGE 完成**文档类型选择、字段约束、模板渲染、OOXML 后处理、校验与轻量修复**，最终生成可继续编辑的 `.docx` 文件。
+FORGE 是一个本地运行的 stdio MCP 文档引擎。它不让 AI 自由“画”Word 格式，而是让 AI 负责理解需求和生成内容，让模板负责定义版式，再由 FORGE 完成**目标类型识别、字段约束、模板渲染、OOXML 后处理、校验与轻量修复**，最终生成可继续编辑的 `.docx` 文件。
 
 一句话概括：**AI 负责写，模板负责定版，FORGE 负责把内容稳定地放进正确格式。**
 
@@ -210,8 +213,8 @@ flowchart TD
 Clone the repository / 克隆仓库：
 
 ```bash
-git clone https://github.com/IIIIQAQIIII/FORGE-docx.git
-cd FORGE-docx
+git clone https://github.com/IIIIQAQIIII/forge-word-docx-mcp.git
+cd forge-word-docx-mcp
 ```
 
 ### macOS / Linux
