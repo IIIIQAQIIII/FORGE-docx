@@ -1,0 +1,55 @@
+name: FORGE CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Static checks
+        run: |
+          python -m py_compile server.py build_release.py
+
+      - name: Load FORGE and verify templates
+        run: |
+          python - <<'PY'
+          import server
+          templates = sorted(server.TEMPLATES_DIR.glob("*.docx"))
+          assert len(templates) == 11, f"Expected 11 DOCX templates, found {len(templates)}"
+          assert server.mcp is not None
+          print("FORGE loaded successfully")
+          print("Templates:", len(templates))
+          PY
+
+      - name: Build release package
+        run: |
+          python build_release.py
+          test -f dist/forge-docx-v1.1.zip
+          test -f dist/forge-docx-v1.1.zip.sha256
