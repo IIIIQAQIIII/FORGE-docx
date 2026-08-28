@@ -2,22 +2,53 @@
 
 **Format-Oriented Rendering & Generation Engine**
 
+[![Version](https://img.shields.io/badge/version-v1.2.0-111111?style=flat-square)](VERSION)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](requirements.txt)
+[![MCP](https://img.shields.io/badge/MCP-stdio-6F42C1?style=flat-square)](README.md)
+[![DOCX](https://img.shields.io/badge/DOCX-content--preserving-2B579A?style=flat-square)](templates)
+[![GitHub Release](https://img.shields.io/github/v/release/IIIIQAQIIII/forge-word-docx-mcp?style=flat-square&label=release)](https://github.com/IIIIQAQIIII/forge-word-docx-mcp/releases/latest)
+
+> **Forge documents that don’t break.**
+>
+> **AI writes. FORGE holds the format.**
+>
 > **Preserve the content. Reforge the format.**
 
-FORGE is a schema-driven DOCX formatting and transformation engine for AI agents.
-It generates, inspects, reformats, assembles, and safely edits Word documents —
-without rewriting the user's content.
+Version / 当前版本：**v1.2.0**
 
-FORGE 是面向 AI Agent 的、由 Schema 驱动的 DOCX 格式化与文档转换引擎。
-它可以生成、检查、重排、汇编和安全定点编辑可继续修改的 Word 文档，
-并通过内容指纹与保真校验确保用户原文不被擅自改写。
+FORGE is a local stdio MCP engine for generating, inspecting, reformatting,
+assembling, and safely editing editable Word DOCX files. It uses schemas,
+format profiles, source-preserving rendering, and validation to keep document
+content stable while transforming its presentation.
 
-FORGE is **not** a text-generation system. The server never summarizes, rewrites,
-or "improves" document text. It only changes formatting and document structure,
-under explicit instructions, with hard preservation guarantees.
+FORGE 是一个本地运行的 stdio MCP 文档引擎，可生成、检查、重排、汇编和安全定点编辑
+可继续修改的 Word DOCX 文件。它通过 Schema、格式方案、源文件保真渲染和内容校验，
+在转换文档呈现形式的同时保护用户原文。
 
-FORGE **不是**文本生成系统。除非用户明确执行编辑操作，否则它不会总结、
-润色或重写正文，只按照明确指令调整格式与文档呈现结构。
+核心思路：**AI 负责理解需求和生成内容，FORGE 负责守住内容、结构与格式。**
+
+## Why FORGE / 为什么选择 FORGE
+
+AI 很擅长写内容，但复杂 Word 文档最容易在标题、段距、页边距、页码、表格、图片、
+多文档汇编和模板结构上发生格式漂移。FORGE 让格式方案与模板成为版式依据，
+并用内容指纹和保真校验阻止意外丢字、改字或结构损坏。
+
+```text
+AI instruction / Source DOCX
+             ↓
+     Inspect + Semantic Roles
+             ↓
+  Format Profile / DOCX Template
+             ↓
+ Generate / Reformat / Assemble / Edit
+             ↓
+   Preservation Validation
+             ↓
+       Editable DOCX
+```
+
+> 本公开版本中的单位名称、人员名称和示例内容均为虚构或脱敏信息，
+> 不代表任何真实机构或个人。
 
 ---
 
