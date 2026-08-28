@@ -1,12 +1,16 @@
-"""A local MCP server for template-based Word documents.
+"""FORGE — Format-Oriented Rendering & Generation Engine.
 
-Tools:
-- list_document_types   : available friendly document types and their templates
-- get_template_schema   : the JSON fields a template expects, plus an example
-- generate_docx         : fill a template and save the finished .docx
-- generate_by_type      : like generate_docx but uses a friendly type name
-- validate_docx         : basic content / layout / leftover-placeholder checks
-- fix_docx              : safe light repairs (NBSP and accidental trailing spaces)
+Local stdio MCP server for generating, inspecting, reformatting, assembling,
+validating and safely editing DOCX documents.
+
+Core systems:
+- Generation
+- Inspection
+- Reformat
+- Assembly
+- Edit
+- Format Intelligence
+- Open Format Profiles
 """
 
 from __future__ import annotations

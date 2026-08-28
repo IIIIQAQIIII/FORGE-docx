@@ -1,11 +1,15 @@
-FORGE public snapshot v1.2.0
+FORGE public snapshot v1.2.1
 Target repository: IIIIQAQIIII/forge-word-docx-mcp
 Git history: intentionally not included
 
 Files:
+.github/workflows/ci.yml
 .gitignore
 CHANGELOG.md
+INSTALL.md
+LICENSE
 README.md
+RELEASE_NOTES_v1.2.1.md
 RELEASE_NOTES_v1.2.md
 VERSION
 assembly_engine/__init__.py

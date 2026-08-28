@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.1
+
+### Fixed
+
+- Restored MIT `LICENSE` and the current public `INSTALL.md`.
+- Repaired the end-user runtime ZIP allowlist and added clean-venv smoke validation.
+- Restored public GitHub Actions CI and corrected README references.
+- Corrected the DeepSeek Harness snippet filename in both installers.
+- Preserved `LICENSE`, `INSTALL.md`, and CI in the public sanitizer allowlist.
+
+### Changed
+
+- Aligned Python support wording with the verified 3.10 / 3.11 / 3.12 CI matrix.
+- Updated repository documentation and metadata for FORGE v1.2 capabilities.
+
+**No product behavior changes.**
+
 ## v1.2.0
 
 ### Added

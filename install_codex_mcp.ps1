@@ -25,10 +25,10 @@ if (Get-Command py -ErrorAction SilentlyContinue) {
 } elseif (Get-Command python -ErrorAction SilentlyContinue) {
     $PythonCommand = "python"
 } else {
-    throw "Python 3 was not found. Please install Python 3.10 or newer first."
+    throw "Python 3 was not found. Please install Python 3.10, 3.11 or 3.12 first."
 }
 
-& $PythonCommand @PythonArgs -c "import sys; assert sys.version_info >= (3,10), f'Python 3.10+ is required; current version is {sys.version.split()[0]}'; print('Python:', sys.version.split()[0])"
+& $PythonCommand @PythonArgs -c "import sys; assert (3,10) <= sys.version_info < (3,13), f'Python 3.10-3.12 is required; current version is {sys.version.split()[0]}'; print('Python:', sys.version.split()[0])"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 New-Item -ItemType Directory -Force -Path $OutputsDir | Out-Null

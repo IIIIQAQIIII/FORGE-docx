@@ -13,14 +13,14 @@ if command -v python3 >/dev/null 2>&1; then
 elif command -v python >/dev/null 2>&1; then
   SYSTEM_PYTHON="$(command -v python)"
 else
-  echo "Error: Python 3 was not found. Please install Python 3.10 or newer first."
+  echo "Error: Python 3 was not found. Please install Python 3.10, 3.11 or 3.12 first."
   exit 1
 fi
 
 "$SYSTEM_PYTHON" - <<'PY'
 import sys
-if sys.version_info < (3, 10):
-    raise SystemExit(f"Python 3.10+ is required; current version is {sys.version.split()[0]}")
+if not (3, 10) <= sys.version_info < (3, 13):
+    raise SystemExit(f"Python 3.10-3.12 is required; current version is {sys.version.split()[0]}")
 print(f"Python: {sys.version.split()[0]}")
 PY
 

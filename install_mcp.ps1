@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $ProjectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvDir = Join-Path $ProjectDir '.venv'
 $PythonBin = Join-Path $VenvDir 'Scripts\python.exe'
-$HarnessSnippet = Join-Path $ProjectDir 'deepseek-harness-forge-forge-word-docx-mcp.yml'
+$HarnessSnippet = Join-Path $ProjectDir 'deepseek-harness-forge-word-docx-mcp.yml'
 
 Write-Host "`nFORGE universal installer"
 Write-Host "Project: $ProjectDir`n"
@@ -17,13 +17,13 @@ foreach ($candidate in @('python', 'py')) {
     } catch {}
 }
 if (-not $SystemPython) {
-    throw 'Python 3.10+ was not found.'
+    throw 'Python 3.10, 3.11 or 3.12 was not found.'
 }
 
 if ($SystemPython -eq 'py') {
-    & py -3 -c "import sys; assert sys.version_info >= (3,10), sys.version; print('Python:', sys.version.split()[0])"
+    & py -3 -c "import sys; assert (3,10) <= sys.version_info < (3,13), sys.version; print('Python:', sys.version.split()[0])"
 } else {
-    & python -c "import sys; assert sys.version_info >= (3,10), sys.version; print('Python:', sys.version.split()[0])"
+    & python -c "import sys; assert (3,10) <= sys.version_info < (3,13), sys.version; print('Python:', sys.version.split()[0])"
 }
 
 if (-not (Test-Path (Join-Path $ProjectDir 'server.py')) -or
