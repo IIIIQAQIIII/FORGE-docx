@@ -5,6 +5,10 @@
 FORGE v1.2 turns a template generator into a schema-driven DOCX formatting and
 transformation engine for AI agents.
 
+FORGE v1.2 将原有模板生成器升级为面向 AI Agent 的 Schema 驱动 DOCX
+格式化与文档转换引擎。它支持生成、检查、内容保真重排、批量汇编和安全定点编辑，
+输出仍是可继续编辑的 Word 文档；除非执行明确的编辑指令，否则不会改写用户原文。
+
 ## Major Capabilities
 
 - **Content-preserving DOCX reformatting** — source-preserving renderer plus hard preservation validation (text, structure, media, sequence, tables, media relationships).

@@ -8,9 +8,16 @@ FORGE is a schema-driven DOCX formatting and transformation engine for AI agents
 It generates, inspects, reformats, assembles, and safely edits Word documents —
 without rewriting the user's content.
 
+FORGE 是面向 AI Agent 的、由 Schema 驱动的 DOCX 格式化与文档转换引擎。
+它可以生成、检查、重排、汇编和安全定点编辑可继续修改的 Word 文档，
+并通过内容指纹与保真校验确保用户原文不被擅自改写。
+
 FORGE is **not** a text-generation system. The server never summarizes, rewrites,
 or "improves" document text. It only changes formatting and document structure,
 under explicit instructions, with hard preservation guarantees.
+
+FORGE **不是**文本生成系统。除非用户明确执行编辑操作，否则它不会总结、
+润色或重写正文，只按照明确指令调整格式与文档呈现结构。
 
 ---
 
