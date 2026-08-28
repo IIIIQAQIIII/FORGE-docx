@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $ProjectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvDir = Join-Path $ProjectDir '.venv'
 $PythonBin = Join-Path $VenvDir 'Scripts\python.exe'
-$HarnessSnippet = Join-Path $ProjectDir 'deepseek-harness-forge-docx.yml'
+$HarnessSnippet = Join-Path $ProjectDir 'deepseek-harness-forge-forge-word-docx-mcp.yml'
 
 Write-Host "`nFORGE universal installer"
 Write-Host "Project: $ProjectDir`n"
@@ -48,10 +48,10 @@ if (-not (Test-Path $PythonBin)) {
 $configured = $false
 if (Get-Command codex -ErrorAction SilentlyContinue) {
     Write-Host 'Configuring Codex MCP...'
-    & codex mcp get forge-docx *> $null
-    if ($LASTEXITCODE -eq 0) { & codex mcp remove forge-docx *> $null }
-    & codex mcp add forge-docx -- $PythonBin (Join-Path $ProjectDir 'server.py')
-    Write-Host 'Configured Codex: forge-docx'
+    & codex mcp get word-docx *> $null
+    if ($LASTEXITCODE -eq 0) { & codex mcp remove word-docx *> $null }
+    & codex mcp add word-docx -- $PythonBin (Join-Path $ProjectDir 'server.py')
+    Write-Host 'Configured Codex: word-docx'
     $configured = $true
 }
 
@@ -61,10 +61,10 @@ $cwdPath = $ProjectDir.Replace("'", "''")
 $snippet = @"
 # Add this plugin row to the plugins list of the DeepSeek Harness profile's cordis.yml.
 # DeepSeek Harness uses @deepseek-ai/dsh-mcp-client to bridge local stdio MCP servers.
-- id: mcp-forge-docx
+- id: mcp-word-docx
   name: '@deepseek-ai/dsh-mcp-client'
   config:
-    serverName: forge-docx
+    serverName: word-docx
     transport: stdio
     command: '$pythonPath'
     args:

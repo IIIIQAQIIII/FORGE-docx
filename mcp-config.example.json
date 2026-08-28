@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "word-document-tools": {
+      "command": "/absolute/path/to/forge-word-docx-mcp/.venv/bin/python",
+      "args": ["/absolute/path/to/forge-word-docx-mcp/server.py"]
+    }
+  }
+}

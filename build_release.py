@@ -1,15 +1,15 @@
-"""Build a clean end-user ZIP from the public FORGE repository.
+"""Build a clean end-user ZIP from the private development repository.
 
 Usage:
     python3 build_release.py
 
 Output:
-    dist/forge-docx-vX.Y.Z.zip
-    dist/forge-docx-vX.Y.Z.zip.sha256
+    dist/forge-word-docx-mcp-vX.Y.Z.zip
+    dist/forge-word-docx-mcp-vX.Y.Z.zip.sha256
 
-The archive is whitelist-based: only runtime files, license, docs and templates
-are included. Development scripts, tests, Git metadata, virtual environments,
-local config and previous outputs are deliberately excluded.
+The archive is whitelist-based: only runtime files and templates are included.
+Development scripts, tests, Git metadata, virtual environments, local config and
+previous outputs are deliberately excluded.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent
 DIST_DIR = PROJECT_DIR / "dist"
-PACKAGE_DIR_NAME = "forge-docx"
+PACKAGE_DIR_NAME = "forge-word-docx-mcp"
 
 RUNTIME_FILES = [
     "server.py",
@@ -30,7 +30,6 @@ RUNTIME_FILES = [
     "VERSION",
     "README.md",
     "INSTALL.md",
-    "LICENSE",
     "install_mcp.sh",
     "install_mcp.ps1",
     # Backward-compatible client-specific installers.
@@ -76,10 +75,10 @@ def build_release() -> Path:
     templates = validate_release_inputs()
     DIST_DIR.mkdir(exist_ok=True)
 
-    zip_path = DIST_DIR / f"forge-docx-{version}.zip"
+    zip_path = DIST_DIR / f"forge-word-docx-mcp-{version}.zip"
     checksum_path = zip_path.with_suffix(zip_path.suffix + ".sha256")
 
-    with tempfile.TemporaryDirectory(prefix="forge-docx-release-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="forge-word-docx-mcp-release-") as tmp:
         staging_root = Path(tmp) / PACKAGE_DIR_NAME
         staging_root.mkdir(parents=True)
 

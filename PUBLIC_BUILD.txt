@@ -1,20 +1,74 @@
-FORGE public snapshot v1.1
-Target repository: IIIIQAQIIII/forge-docx
+FORGE public snapshot v1.2.0
+Target repository: IIIIQAQIIII/forge-word-docx-mcp
 Git history: intentionally not included
 
 Files:
 .gitignore
-INSTALL.md
-PUBLIC_BUILD.txt
+CHANGELOG.md
 README.md
+RELEASE_NOTES_v1.2.md
 VERSION
+assembly_engine/__init__.py
+assembly_engine/importer.py
+assembly_engine/models.py
+assembly_engine/preservation.py
+assembly_engine/service.py
 build_release.py
+conftest.py
+docs/ARCHITECTURE.md
+docs/FORMAT_PROFILES.md
+docs/MCP_TOOLS.md
+document_ir.py
+edit_engine/__init__.py
+edit_engine/models.py
+edit_engine/planner.py
+edit_engine/renderer.py
+edit_engine/service.py
+edit_engine/validation.py
+examples/example_assemble.py
+examples/example_edit.py
+examples/example_reference_profile.py
+examples/example_reformat.py
+forge_errors.py
+forge_utils.py
+forge_version.py
+format_model.py
 install_codex_mcp.ps1
 install_codex_mcp.sh
 install_mcp.ps1
 install_mcp.sh
+intelligence/__init__.py
+intelligence/classifier.py
+intelligence/format_aliases.py
+intelligence/mappings.py
+intelligence/resolver.py
+intelligence/signals.py
+mcp-config.example.json
+open_format/__init__.py
+open_format/config.py
+open_format/guided.py
+open_format/home.py
+open_format/normalizer.py
+open_format/profile_store.py
+open_format/reference_builder.py
+open_format/template_registry.py
 outputs/.gitkeep
+profiles/__init__.py
+profiles/registry.py
+reformat.py
+reformat_engine/__init__.py
+reformat_engine/models.py
+reformat_engine/planner.py
+reformat_engine/profile_coverage.py
+reformat_engine/renderer.py
+reformat_engine/service.py
+requirements-dev.txt
 requirements.txt
+scripts/mcp_smoke.py
+semantics/__init__.py
+semantics/annotator.py
+semantics/role_signals.py
+semantics/roles.py
 server.py
 templates/sample_template.docx
 templates/传统公文-活动方案.docx
@@ -27,5 +81,28 @@ templates/活动影像.docx
 templates/活动总结.docx
 templates/行政周报.docx
 templates/论文.docx
+test_assembly_core.py
+test_assembly_mcp.py
+test_assembly_stress.py
+test_document_fidelity.py
+test_document_ir.py
+test_intelligence.py
+test_intelligence_adversarial.py
+test_intelligence_integration.py
+test_intelligence_resolver.py
+test_mcp.py
+test_mission06_open_format.py
+test_mission06_templates.py
+test_mission07_edit.py
+test_mission07_scale.py
+test_reformat_planner.py
+test_reformat_service_e2e.py
+test_reformat_service_routing.py
+test_renderer.py
+test_renderer_b2.py
+test_renderer_page_number.py
+test_semantic_annotator.py
+test_semantic_annotator_ext.py
+test_server.py
 
 This manifest is generated from a sanitized snapshot.

@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$PROJECT_DIR/.venv"
 PYTHON_BIN="$VENV_DIR/bin/python"
-HARNESS_SNIPPET="$PROJECT_DIR/deepseek-harness-forge-docx.yml"
+HARNESS_SNIPPET="$PROJECT_DIR/deepseek-harness-forge-forge-word-docx-mcp.yml"
 
 printf '\nFORGE universal installer\n'
 printf 'Project: %s\n\n' "$PROJECT_DIR"
@@ -54,21 +54,21 @@ configured=0
 
 if command -v codex >/dev/null 2>&1; then
   echo "Configuring Codex MCP..."
-  if codex mcp get forge-docx >/dev/null 2>&1; then
-    codex mcp remove forge-docx >/dev/null
+  if codex mcp get word-docx >/dev/null 2>&1; then
+    codex mcp remove word-docx >/dev/null
   fi
-  codex mcp add forge-docx -- "$PYTHON_BIN" "$PROJECT_DIR/server.py"
-  echo "Configured Codex: forge-docx"
+  codex mcp add word-docx -- "$PYTHON_BIN" "$PROJECT_DIR/server.py"
+  echo "Configured Codex: word-docx"
   configured=1
 fi
 
 cat > "$HARNESS_SNIPPET" <<EOF
 # Add this plugin row to the plugins list of the DeepSeek Harness profile's cordis.yml.
 # DeepSeek Harness uses @deepseek-ai/dsh-mcp-client to bridge local stdio MCP servers.
-- id: mcp-forge-docx
+- id: mcp-word-docx
   name: '@deepseek-ai/dsh-mcp-client'
   config:
-    serverName: forge-docx
+    serverName: word-docx
     transport: stdio
     command: '$PYTHON_BIN'
     args:

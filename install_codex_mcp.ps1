@@ -51,14 +51,14 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 if (Get-Command codex -ErrorAction SilentlyContinue) {
     Write-Host "Configuring Codex MCP..."
-    & codex mcp get forge-docx *> $null
+    & codex mcp get word-docx *> $null
     if ($LASTEXITCODE -eq 0) {
-        & codex mcp remove forge-docx *> $null
+        & codex mcp remove word-docx *> $null
     }
-    & codex mcp add forge-docx -- $PythonBin $ServerPath
+    & codex mcp add word-docx -- $PythonBin $ServerPath
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     Write-Host ""
-    Write-Host "Installed: forge-docx"
+    Write-Host "Installed: word-docx"
     Write-Host "Restart Codex to load the MCP server."
 } else {
     Write-Host ""

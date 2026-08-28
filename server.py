@@ -15,7 +15,7 @@ import json
 import math
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from zipfile import ZipFile
 
 from docx import Document
@@ -26,6 +26,11 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 from docxtpl import DocxTemplate
 from mcp.server.fastmcp import FastMCP
+
+import reformat
+import format_model
+from forge_version import FORGE_VERSION, FORMAT_MODEL_VERSION
+from profiles import registry as profile_registry
 
 PROJECT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = PROJECT_DIR / "templates"
@@ -207,7 +212,7 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "date": "成文日期",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "title": "科技之春活动方案",
             "subtitle": "",
             "opening": "为进一步激发幼儿对科学技术的兴趣，结合园所实际，拟于近期开展“科技之春”系列活动。现制定方案如下：",
@@ -230,7 +235,7 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
                 },
             ],
             "attachment": "活动安排表",
-            "signature": "示例幼儿园",
+            "signature": "某市示范幼儿园",
             "date": "2026年3月19日",
         },
     },
@@ -291,8 +296,10 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "abstract": "摘要内容",
             "keywords": "关键词（分号分隔）",
             "chapter.heading": "一级标题（第一章 XXX）",
+            "chapter.paragraphs": "一级标题下直接正文段落数组（无二级标题时用），可省略",
             "chapter.sections": "二级标题数组",
             "section.heading": "二级标题（1.1 XXX）",
+            "section.paragraphs": "二级标题下直接正文段落数组（无三级标题时用），可省略",
             "section.subsections": "三级标题数组",
             "subsection.heading": "三级标题（1.1.1 XXX）",
             "subsection.paragraphs": "正文段落数组",
@@ -336,7 +343,7 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "条目由模板自动编号（1. 2. 3. …）；某一块空缺时传 [\"无\"]，生成时只显示“无”且不加序号。",
         ],
         "placeholders": {
-            "organization": "单位全称（如：示例幼儿园）",
+            "organization": "单位全称（如：某市实验幼儿园）",
             "semester": "学期（如：2026年秋季学期）",
             "week": "周次（如：17）",
             "date_range": "本周起止日期（如：12.21-12.25）",
@@ -346,7 +353,7 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "section.plan": "下周重点工作计划条目数组；空缺写 [\"无\"]",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市实验幼儿园",
             "semester": "2026年秋季学期",
             "week": "17",
             "date_range": "12.21-12.25",
@@ -380,7 +387,7 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "date": "成文日期",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "title": "读书月活动总结",
             "subtitle": "2025——2026学年第二学期",
             "opening": "为进一步营造浓厚的园所阅读氛围，培养幼儿良好的阅读习惯，我园于2026年4月组织开展了读书月活动，现将活动总结如下：",
@@ -389,8 +396,8 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
                 {"heading": "二、活动成效与亮点", "paragraphs": ["活动设计体现了年龄梯度，家园协同作用明显。"]},
             ],
             "attachment": "",
-            "signature": "示例幼儿园",
-            "department": "保教部",
+            "signature": "某市示范幼儿园",
+            "department": "保教处",
             "date": "2026年4月30日",
         },
     },
@@ -407,10 +414,10 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "activity_name": "活动内容",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "date_short": "2026.4.29",
             "location": "幼儿园多功能厅、各班级",
-            "organizer": "保教部",
+            "organizer": "保教处",
             "activity_name": "读书月系列活动",
         },
     },
@@ -435,17 +442,17 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "department": "落款部门",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "document_title": "培训通知",
             "purpose": "为进一步加强师德师风警示教育……现将有关事项通知如下：",
             "date": "2026年6月30日",
             "location": "党建室",
             "training_topic": "师德师风培训《警示案例学习》",
-            "trainer": "陈老师",
-            "participants": "示例幼儿园全体教师",
+            "trainer": "张明",
+            "participants": "某市示范幼儿园全体教师",
             "requirement_1": "全体教师准时参会，认真做好学习记录。",
             "requirement_2": "结合岗位职责和案例内容主动对照反思，增强底线意识、规矩意识和责任意识。",
-            "department": "保教部",
+            "department": "保教处",
         },
     },
     "培训活动影像.docx": {
@@ -486,17 +493,17 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "training_reflection": "培训心得（表格长文本）",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "document_title": "培训通知",
             "purpose": "为进一步加强师德师风警示教育……现将有关事项通知如下：",
             "date": "2026年6月30日",
             "location": "党建室",
             "training_topic": "师德师风培训《警示案例学习》",
-            "trainer": "陈老师",
-            "participants": "示例幼儿园全体教师",
+            "trainer": "张明",
+            "participants": "某市示范幼儿园全体教师",
             "requirement_1": "全体教师准时参会，认真做好学习记录。",
             "requirement_2": "结合岗位职责和案例内容主动对照反思，增强底线意识、规矩意识和责任意识。",
-            "department": "保教部",
+            "department": "保教处",
             "date_short": "2026.6.30",
             "hours": "2",
             "training_content": "一、明确警示案例学习的重要意义……",
@@ -517,11 +524,11 @@ TEMPLATE_INFO: dict[str, dict[str, Any]] = {
             "training_reflection": "培训心得（表格长文本）",
         },
         "example": {
-            "organization": "示例幼儿园",
+            "organization": "某市示范幼儿园",
             "date_short": "2026.6.30",
             "location": "党建室",
             "participants": "全体教师",
-            "trainer": "陈老师",
+            "trainer": "张明",
             "hours": "2",
             "training_topic": "师德师风培训《警示案例学习》",
             "training_content": "一、明确警示案例学习的重要意义……",
@@ -602,11 +609,11 @@ def _paragraph_line_height_pt(p) -> float:
 def _adjust_notice_masthead(path: Path, organization: str) -> None:
     """培训通知红字：字号固定小初 36pt 不变，只按单位名称长度调整缩放/间距。
 
-    示例幼儿园 / 示例幼儿园 保持模板默认参数；
+    某市实验幼儿园 / 某市示范幼儿园 保持模板默认参数；
     其他单位保持字号不变，自动调整字符缩放（w:w）与紧缩值（w:spacing），
     保证红字一行放下且美观。
     """
-    if not organization or organization in ("示例幼儿园", "示例幼儿园"):
+    if not organization or organization in ("某市实验幼儿园", "某市示范幼儿园"):
         return
     document = Document(path)
     if not document.paragraphs:
@@ -714,6 +721,7 @@ def list_document_types() -> str:
     """List available document types, their template files, and the fields they expect."""
     templates_on_disk = sorted(p.name for p in TEMPLATES_DIR.glob("*.docx"))
     report: dict[str, Any] = {
+        "forge_version": FORGE_VERSION,
         "document_types": {
             type_name: {
                 "template": template_file,
@@ -843,11 +851,32 @@ def generate_by_type(document_type: str, content: dict[str, Any], output_name: s
     培训通知默认保持一页；确认允许超过一页时传 force_multipage_notice=true。
     如果用户未明确说明是整套还是单个，请先与用户确认后再调用本工具。
     """
-    template_name = DOCUMENT_TYPES.get(document_type)
-    if not template_name:
+    from open_format.template_registry import resolve_document_template
+
+    resolved = resolve_document_template(document_type)
+    if resolved is None:
         available = "、".join(sorted(set(DOCUMENT_TYPES)))
         return _error(f"unknown document type {document_type!r}. Available: {available}")
-    return generate_docx(template_name, content, output_name, force_multipage_notice)
+    if resolved["origin"] == "builtin":
+        return generate_docx(resolved["template"], content, output_name, force_multipage_notice)
+    return _generate_with_user_template(resolved, content, output_name)
+
+
+def _generate_with_user_template(resolved: dict[str, Any], content: dict[str, Any], output_name: str) -> str:
+    """Render a persisted user docxtpl template without touching DOCUMENT_TYPES."""
+    manifest = resolved["manifest"]
+    template_path = resolved["file"]
+    if not output_name.endswith(".docx"):
+        return _error("output_name must end in .docx")
+    output_path = resolve_output_path(output_name)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        document = DocxTemplate(template_path)
+        document.render(dict(content))
+        document.save(output_path)
+    except Exception as exc:
+        return _error(f"generating document from user template: {exc}")
+    return f"Created: {output_path}"
 
 
 @mcp.tool()
@@ -874,6 +903,211 @@ def generate_document_set(set_name: str, content: dict[str, Any], output_prefix:
             return _error(f"set generation stopped at {template_name}: {result}")
         created.append(result)
     return "Created set '" + set_name + "':\n" + "\n".join(created)
+
+
+@mcp.tool()
+def reformat_docx(docx_path: str, document_type: str, output_name: str, force_multipage_notice: bool = False) -> str:
+    """Reformat an existing DOCX into a registered document type's format.
+
+    Reads the source document on the server side (the full text does NOT pass
+    through the AI output), extracts its structure, and re-renders it with the
+    chosen template. Suitable for very large documents.
+
+    document_type: 论文/演讲稿/发言稿/长文, 传统公文/计划/总结/方案/汇报/报告/请示,
+    传统公文活动方案/活动方案/活动总结, 行政周报/周报, 培训通知, 培训活动记录,
+    培训活动影像, 活动影像.
+    """
+    if not output_name.endswith(".docx"):
+        return _error("output_name must end in .docx")
+    source = resolve_input_docx(docx_path)
+    if not source.is_file():
+        # 也允许传项目根目录下的文件名（如“教师癸论文《未来月球车》.docx”）
+        alt = (PROJECT_DIR / Path(docx_path).expanduser()).resolve()
+        if alt.is_file():
+            source = alt
+        else:
+            return _error(f"document not found: {source}")
+    template_name = DOCUMENT_TYPES.get(document_type)
+    if not template_name:
+        available = "、".join(sorted(set(DOCUMENT_TYPES)))
+        return _error(f"unknown document type {document_type!r}. Available: {available}")
+
+    media_dir = OUTPUTS_DIR / "_reformat_media"
+    try:
+        content = reformat.build_reformat_content(source, document_type, media_dir)
+        return generate_docx(template_name, content, output_name, force_multipage_notice)
+    except Exception as exc:
+        return _error(f"reformatting document: {exc}")
+
+
+@mcp.tool()
+def inspect_document(
+    source_path: str,
+    offset: int = 0,
+    limit: int = 100,
+    query: Optional[str] = None,
+    roles: Optional[list[str]] = None,
+    outline_only: bool = False,
+    max_text_chars: int = 4000,
+) -> str:
+    """Paginated structural inspection of a DOCX for safe editing.
+
+    Returns block summaries (block_id, type, semantic_role, text preview,
+    source_locator, metadata). Query filters visible text without rewriting it.
+    Never returns the full raw XML.
+    """
+    from edit_engine.service import inspect_document as service_inspect
+
+    source = resolve_input_docx(source_path)
+    if not source.is_file():
+        return _error(f"document not found: {source}")
+    result = service_inspect(
+        source_path=source,
+        offset=offset,
+        limit=limit,
+        query=query,
+        roles=roles,
+        outline_only=outline_only,
+        max_text_chars=max_text_chars,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def edit_document(
+    source_path: str,
+    expected_source_sha256: str,
+    edits: list[dict[str, Any]],
+    output_path: Optional[str] = None,
+    dry_run: bool = False,
+) -> str:
+    """Apply explicit, safe edits to a DOCX (source-preserving + transactional).
+
+    Supported ops: replace_text, insert_paragraph_before, insert_paragraph_after,
+    append_paragraph, delete_paragraph. output_path=None generates
+    <source_stem>_EDITED.docx. The source file is never modified.
+    """
+    from edit_engine.service import edit_document as service_edit
+
+    source = resolve_input_docx(source_path)
+    if not source.is_file():
+        return _error(f"document not found: {source}")
+    output = resolve_output_path(output_path) if output_path is not None else None
+    result = service_edit(
+        source_path=source,
+        expected_source_sha256=expected_source_sha256,
+        edits=edits,
+        output_path=str(output) if output else None,
+        dry_run=dry_run,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def reformat_document(
+    source_path: str,
+    output_path: Optional[str] = None,
+    explicit_profile_id: Optional[str] = None,
+    explicit_format_hint: Optional[str] = None,
+    reference_profile_id: Optional[str] = None,
+    saved_profile_id: Optional[str] = None,
+    allow_default: bool = False,
+) -> str:
+    """Reformat an existing DOCX with the FORGE v1.2 source-preserving pipeline.
+
+    This is the v2 reformat path (reformat_docx remains the legacy path and is
+    unchanged). The source file is never modified. If output_path is omitted,
+    a safe <source_stem>_FORGE.docx is produced next to the source file.
+
+    Priority: explicit_profile_id / explicit_format_hint > reference_profile_id
+    > saved_profile_id > content recommendation > allow_default.
+
+    If the content is ambiguous and no user format is given, status is
+    needs_guidance and no output is generated.
+    """
+    from reformat_engine.service import reformat_document as service_reformat_document
+
+    source = resolve_input_docx(source_path)
+    if not source.is_file():
+        alt = (PROJECT_DIR / Path(source_path).expanduser()).resolve()
+        if alt.is_file():
+            source = alt
+        else:
+            return _error(f"document not found: {source}")
+
+    if output_path is not None:
+        output = resolve_output_path(output_path)
+    else:
+        output = None
+
+    result = service_reformat_document(
+        source_path=str(source),
+        output_path=str(output) if output else None,
+        explicit_profile_id=explicit_profile_id,
+        explicit_format_hint=explicit_format_hint,
+        reference_profile_id=reference_profile_id,
+        saved_profile_id=saved_profile_id,
+        allow_default=allow_default,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def assemble_documents(
+    source_paths: list[str],
+    output_path: str,
+    explicit_profile_id: Optional[str] = None,
+    explicit_format_hint: Optional[str] = None,
+    reference_profile_id: Optional[str] = None,
+    saved_profile_id: Optional[str] = None,
+    assembly_profile_id: Optional[str] = None,
+    output_mode: str = "assembled",
+    order_mode: str = "input",
+    allow_default: bool = False,
+    checkpoint: bool = False,
+    job_id: Optional[str] = None,
+    resume: bool = False,
+) -> str:
+    """Assemble multiple DOCX files into one FORGE-formatted document.
+
+    Sources are normalized with Reformat 2.0, then merged package-aware
+    (media / hyperlink / numbering / style conflicts are handled safely).
+    output_mode: assembled | separate | both.
+    order_mode: input | filename.
+    Whole-batch atomic: any failed item means no output is produced.
+    checkpoint=True persists per-item checkpoints under FORGE_HOME/jobs/<job_id>.
+    resume=True reuses valid completed checkpoints and continues from there.
+    """
+    from assembly_engine.service import assemble_documents as service_assemble_documents
+
+    resolved_sources = []
+    for value in source_paths:
+        source = resolve_input_docx(value)
+        if source.is_file():
+            resolved_sources.append(str(source))
+        else:
+            alt = (PROJECT_DIR / Path(value).expanduser()).resolve()
+            if alt.is_file():
+                resolved_sources.append(str(alt))
+            else:
+                return _error(f"document not found: {value}")
+    output = resolve_output_path(output_path)
+    result = service_assemble_documents(
+        source_paths=resolved_sources,
+        output_path=str(output),
+        explicit_profile_id=explicit_profile_id,
+        explicit_format_hint=explicit_format_hint,
+        reference_profile_id=reference_profile_id,
+        saved_profile_id=saved_profile_id,
+        assembly_profile_id=assembly_profile_id,
+        output_mode=output_mode,
+        order_mode=order_mode,
+        allow_default=allow_default,
+        checkpoint=checkpoint,
+        job_id=job_id,
+        resume=resume,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
 
 
 @mcp.tool()
@@ -905,6 +1139,260 @@ def get_semester_info(start_year: int) -> str:
         "rule": "所有落款时间均须落在对应学期时间段内，且取工作日。",
     }
     return json.dumps(info, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def list_format_profiles() -> str:
+    """List the FORGE Format Model profiles (builtin + persisted user profiles).
+
+    Read-only; does not change Word generation. Raw profiles only; use the
+    registry resolve_profile() to see the deep-merged result.
+    """
+    from open_format.profile_store import reload_user_profiles
+
+    reload_user_profiles()
+    detailed = profile_registry.list_profiles_detailed()
+    report = {
+        "forge_version": FORGE_VERSION,
+        "format_model_version": FORMAT_MODEL_VERSION,
+        "modes": [mode.value for mode in format_model.FormatMode],
+        "content_intent_types": [c.value for c in format_model.ContentIntentType],
+        "origins": {name: info["origin"] for name, info in detailed.items()},
+        "format_profiles": {
+            name: info["profile"].to_dict() for name, info in detailed.items()
+        },
+        "resolved_profiles": {
+            name: profile_registry.resolve_profile(name).to_dict()
+            for name in detailed
+        },
+    }
+    return json.dumps(report, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def get_format_profile(profile_id: str) -> str:
+    """Get a raw + resolved FormatProfile with origin (builtin | user)."""
+    from open_format.profile_store import reload_user_profiles
+
+    reload_user_profiles()
+    raw = profile_registry.get_profile(profile_id)
+    if raw is None:
+        return _error(f"profile not found: {profile_id}")
+    try:
+        resolved = profile_registry.resolve_profile(profile_id)
+    except Exception as exc:
+        return _error(f"resolving profile: {exc}")
+    origin = "user" if profile_registry.is_user_profile(profile_id) else "builtin"
+    return json.dumps(
+        {"profile_id": profile_id, "origin": origin, "raw": raw.to_dict(), "resolved": resolved.to_dict()},
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+@mcp.tool()
+def delete_format_profile(profile_id: str) -> str:
+    """Delete a persisted user profile. Built-in profiles are protected."""
+    from open_format.profile_store import delete_user_profile
+
+    return json.dumps(delete_user_profile(profile_id), ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def analyze_reference_format(
+    reference_path: str,
+    base_profile_id: str = "generic_document",
+    profile_id: Optional[str] = None,
+    name: Optional[str] = None,
+) -> str:
+    """Analyze a reference DOCX and build a Draft FormatProfile.
+
+    The draft contains no document text — only formatting evidence statistics.
+    Conflicts are reported as needs_review with the conflicting properties.
+    """
+    from open_format.reference_builder import analyze_reference_docx
+
+    source = resolve_input_docx(reference_path)
+    if not source.is_file():
+        return _error(f"document not found: {source}")
+    result = analyze_reference_docx(
+        reference_path=source,
+        base_profile_id=base_profile_id,
+        profile_id=profile_id,
+        name=name,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def create_format_profile(
+    mode: str,
+    profile_id: str,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    base_profile_id: Optional[str] = None,
+    overrides: Optional[dict[str, Any]] = None,
+    intent: Optional[str] = None,
+) -> str:
+    """Create a custom / reference / guided FormatProfile.
+
+    mode=custom:    create directly from overrides (requires base_profile_id).
+    mode=reference: create from reference-learning overrides.
+    mode=guided:    start a guided draft session and return <=5 questions.
+    """
+    from open_format.guided import create_guided_session
+    from open_format.normalizer import validate_rules
+    from open_format.profile_store import save_user_profile
+
+    if mode == "guided":
+        result = create_guided_session(
+            profile_id=profile_id,
+            name=name,
+            description=description,
+            base_profile_id=base_profile_id,
+            intent=intent,
+        )
+        return json.dumps(result, ensure_ascii=False, indent=2)
+
+    if mode not in ("custom", "reference"):
+        return _error("mode must be custom | reference | guided")
+    if not base_profile_id:
+        return _error("base_profile_id is required for custom/reference profile")
+    try:
+        profile_registry.resolve_profile(base_profile_id)
+    except KeyError:
+        return _error(f"base profile not found: {base_profile_id}")
+    rule_result = validate_rules(overrides)
+    if rule_result["errors"]:
+        return _error(f"invalid overrides: {rule_result['errors']}")
+    result = save_user_profile(
+        profile_id=profile_id,
+        name=name or profile_id,
+        description=description or "",
+        source="reference" if mode == "reference" else "custom",
+        inherits=base_profile_id,
+        rules=rule_result["rules"],
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def update_format_profile(
+    session_id: Optional[str] = None,
+    profile_id: Optional[str] = None,
+    answers: Optional[list[dict[str, Any]]] = None,
+    overrides: Optional[dict[str, Any]] = None,
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+) -> str:
+    """Update a guided session or an existing user profile."""
+    if session_id:
+        from open_format.guided import update_guided_session
+
+        return json.dumps(update_guided_session(session_id, answers or []), ensure_ascii=False, indent=2)
+    if profile_id:
+        from open_format.profile_store import update_user_profile
+
+        updates = {}
+        if overrides is not None:
+            updates["overrides"] = overrides
+        if name is not None:
+            updates["name"] = name
+        if description is not None:
+            updates["description"] = description
+        return json.dumps(update_user_profile(profile_id, updates), ensure_ascii=False, indent=2)
+    return _error("session_id or profile_id is required")
+
+
+@mcp.tool()
+def register_document_template(
+    template_path: str,
+    template_id: str,
+    name: str,
+    kind: str,
+    profile_id: str,
+    supported_intents: Optional[list[str]] = None,
+    aliases: Optional[list[str]] = None,
+) -> str:
+    """Register a user DOCX template into the dynamic Template Registry.
+
+    kind=docxtpl requires valid {{ placeholders }}; kind=reference accepts a
+    normal DOCX. Macros, malformed DOCX and unsafe external relationships are
+    rejected during registration.
+    """
+    from open_format.template_registry import register_document_template
+
+    source = resolve_input_docx(template_path)
+    if not source.is_file():
+        return _error(f"template not found: {source}")
+    result = register_document_template(
+        template_path=source,
+        template_id=template_id,
+        name=name,
+        kind=kind,
+        profile_id=profile_id,
+        supported_intents=supported_intents,
+        aliases=aliases,
+    )
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def list_document_templates() -> str:
+    """List builtin + user document templates with origin/kind/profile_id/aliases."""
+    from open_format.template_registry import list_document_templates
+
+    return json.dumps({"templates": list_document_templates()}, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def resolve_document_format(
+    description: str,
+    explicit_profile_id: Optional[str] = None,
+    explicit_format_hint: Optional[str] = None,
+    reference_profile_id: Optional[str] = None,
+    saved_profile_id: Optional[str] = None,
+    allow_default: bool = False,
+    default_profile_id: str = "generic_document",
+) -> str:
+    """Run the FORGE Format Intelligence pipeline on a content description.
+
+    Combines Content Classifier + Format Resolver and returns a suggested
+    document_type. The suggestion is advisory only, not a forced template.
+
+    优先级：User > Reference > Saved > Recommendation > Default。
+    """
+    from intelligence.classifier import classify_content
+    from intelligence.resolver import resolve_format
+    from intelligence.mappings import PROFILE_DOCUMENT_TYPE_RECOMMENDATIONS
+
+    classification = classify_content(description)
+    resolution = resolve_format(
+        classification=classification,
+        explicit_profile_id=explicit_profile_id,
+        explicit_format_hint=explicit_format_hint,
+        reference_profile_id=reference_profile_id,
+        saved_profile_id=saved_profile_id,
+        allow_default=allow_default,
+        default_profile_id=default_profile_id,
+    )
+    profile_id = resolution.get("profile_id")
+    suggested_document_type = PROFILE_DOCUMENT_TYPE_RECOMMENDATIONS.get(profile_id) if profile_id else None
+    report = {
+        "request": {
+            "description": description,
+            "explicit_profile_id": explicit_profile_id,
+            "explicit_format_hint": explicit_format_hint,
+            "reference_profile_id": reference_profile_id,
+            "saved_profile_id": saved_profile_id,
+            "allow_default": allow_default,
+            "default_profile_id": default_profile_id,
+        },
+        "classification": classification,
+        "resolution": resolution,
+        "suggested_document_type": suggested_document_type,
+    }
+    return json.dumps(report, ensure_ascii=False, indent=2)
 
 
 @mcp.tool()
@@ -984,6 +1472,77 @@ def recommend_document_type(description: str) -> str:
     return json.dumps(result, ensure_ascii=False, indent=2)
 
 
+# 常见文字表述错误（规则式，非 AI 全面校对）
+COMMON_TEXT_ERRORS = {
+    "帐号": "账号",
+    "既使": "即使",
+    "做为": "作为",
+    "因该": "应该",
+    "按装": "安装",
+    "松驰": "松弛",
+    "幅射": "辐射",
+    "再接再励": "再接再厉",
+    "一如继往": "一如既往",
+    "迫不急待": "迫不及待",
+    "汗流夹背": "汗流浃背",
+    "走头无路": "走投无路",
+    "名付其实": "名副其实",
+    "自始自终": "自始至终",
+}
+
+# 常见“不该连用”的重复字
+SUSPECT_REPEATS = ("的的", "了了", "是是", "在在", "和和", "与与", "为为", "中中", "这这", "那那", "就就", "也也", "对对")
+
+
+def _text_error_checks(path: Path) -> list[str]:
+    """对文档正文做规则式文字表述检查：错别字、重复字、中英文标点混用等。"""
+    document = Document(path)
+    texts = []
+    for paragraph in document.paragraphs:
+        if paragraph.text.strip():
+            texts.append(paragraph.text)
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if cell.text.strip():
+                    texts.append(cell.text)
+
+    issues: list[str] = []
+    seen: set[str] = set()
+
+    def add_issue(text: str) -> None:
+        if text not in seen:
+            seen.add(text)
+            issues.append(text)
+
+    full_text = "\n".join(texts)
+
+    # 1) 常见错别字/不规范词语
+    for wrong in COMMON_TEXT_ERRORS:
+        if wrong in full_text:
+            add_issue(f"疑似错别字：“{wrong}”应为“{COMMON_TEXT_ERRORS[wrong]}”")
+
+    # 2) 重复字
+    for repeat in SUSPECT_REPEATS:
+        if repeat in full_text:
+            add_issue(f"疑似重复字：“{repeat}”")
+
+    # 3) 三连及以上相同汉字
+    import re as _re
+    for m in _re.finditer(r"([\u4e00-\u9fff])\1{2,}", full_text):
+        add_issue(f"疑似重复字：“{m.group(0)}”")
+
+    # 4) 中文后紧接英文标点（中英文标点混用）
+    for m in _re.finditer(r"[\u4e00-\u9fff][,:;!?]", full_text):
+        add_issue(f"疑似中英文标点混用：“{m.group(0)}”")
+
+    # 5) 连续空格
+    if _re.search(r"[^\s]  +[^\s]", full_text):
+        add_issue("存在连续多余空格")
+
+    return issues
+
+
 @mcp.tool()
 def validate_docx(docx_path: str) -> str:
     """Inspect a DOCX and report content, layout, and leftover-placeholder checks.
@@ -1030,6 +1589,9 @@ def validate_docx(docx_path: str) -> str:
             }
         )
 
+    text_issues = _text_error_checks(path)
+    warnings = warnings + [f"文字表述：{issue}" for issue in text_issues]
+
     report = {
         "file": str(path),
         "status": "warning" if warnings else "pass",
@@ -1038,6 +1600,7 @@ def validate_docx(docx_path: str) -> str:
         "sections": len(document.sections),
         "inline_images": len(document.inline_shapes),
         "margins_cm": layout,
+        "text_checks": text_issues,
         "warnings": warnings,
     }
     return json.dumps(report, ensure_ascii=False, indent=2)
@@ -1422,6 +1985,19 @@ def prompt_generate_thesis() -> str:
         "各章节目录与正文段落；演讲稿通常只写题目和正文。\n"
         "3. 调用 generate_by_type(\"论文\", content, output_name) 生成；"
         "output_name 只给文件名时默认保存到 outputs/，也可给绝对路径。\n"
+        "4. 调用 validate_docx(output_name) 校验。"
+    )
+
+
+@mcp.prompt(title="修改文档格式")
+def prompt_reformat_docx() -> str:
+    """把已有 docx 重排为目标类型格式（文本不经过 AI 输出，适合大文档）。"""
+    return (
+        "用户要修改一份已有 Word 文档的格式。步骤：\n"
+        "1. 向用户确认：原文档路径、目标类型（论文/传统公文/活动方案/行政周报/培训通知等）、输出文件名。\n"
+        "2. 调用 reformat_docx(docx_path, document_type, output_name) 在服务端重排，"
+        "全文不经过 AI 输出，大文档也不会丢字。\n"
+        "3. 培训通知默认一页；若内容超过一页，先与用户确认后再用 force_multipage_notice=true。\n"
         "4. 调用 validate_docx(output_name) 校验。"
     )
 

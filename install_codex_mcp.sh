@@ -53,12 +53,12 @@ PY
 
 if command -v codex >/dev/null 2>&1; then
   echo "Configuring Codex MCP..."
-  if codex mcp get forge-docx >/dev/null 2>&1; then
-    codex mcp remove forge-docx >/dev/null
+  if codex mcp get word-docx >/dev/null 2>&1; then
+    codex mcp remove word-docx >/dev/null
   fi
-  codex mcp add forge-docx -- "$PYTHON_BIN" "$PROJECT_DIR/server.py"
+  codex mcp add word-docx -- "$PYTHON_BIN" "$PROJECT_DIR/server.py"
   echo
-  echo "Installed: forge-docx"
+  echo "Installed: word-docx"
   echo "Restart Codex to load the MCP server."
 else
   echo

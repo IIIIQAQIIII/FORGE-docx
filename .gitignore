@@ -1,13 +1,33 @@
-# Runtime and generated files
+# Python environment and caches
 .venv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# macOS/editor files
 .DS_Store
+.idea/
+.vscode/
+.agent-teams/
+
+# Local configuration and generated documents
 .env
 outputs/*
 !outputs/.gitkeep
 *.tmp.docx
 *.photo.tmp.docx
-deepseek-harness-forge-docx.yml
+smoke_stderr.log
+
+# Local release artifacts
 dist/
+public-dist/
+
+# FORGE user assets (never commit user profiles/templates/drafts/jobs)
+.forge-docx-mcp/
+FORGE_HOME/
+private_samples/
+private-outputs/
+
+# Credentials / environment
+*.secret
+*.credentials
